@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: cuffney-ecs-cluster
+    Description: The name of the ecs cluster
+
+  ResourceNamespace:
+    Type: String
+    Default: /cuffney/main
+    Description: The namespace for the resources
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ResourceNamespace
+      Tags:
+        - Key: Name
+          Value: !Ref ResourceNamespace
+
+  ClusterIdParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${ResourceNamespace}/cluster/id"
+      Type: String
+      Value: !Ref Cluster
+
+  ClusterArnParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${ResourceNamespace}/cluster/arn"
+      Type: String
+      Value: !GetAtt Cluster.Arn
